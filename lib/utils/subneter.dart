@@ -2,8 +2,10 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 
+///Enum that describes the type of networks that exist.
 enum NetworkType { none, a, b, c, d, e}
 
+///Enum extension to know exactly how many sets of 8 bits each type of network use default as mask.
 extension octal on NetworkType {
   int get val{
     switch(this){
@@ -21,6 +23,7 @@ extension octal on NetworkType {
   }
 }
 
+///Turns a binary number into an int.
 int binaryToInt(String binary){
   int result = 0;
   int power = 1;
@@ -32,6 +35,7 @@ int binaryToInt(String binary){
   return result;
 }
 
+///Splits a Network into bits without point for easier manipulation.
 String getBits(String network){
   final temp = network.split(".");
   if(network.isEmpty || temp.length != 4){
@@ -53,6 +57,13 @@ String getBits(String network){
   }
 }
 
+///# Binary Class 
+///## To handle a couple of operations of Binary numbers
+///
+///Allows for easier manipulation of strings that have a format of 
+///Binary numbers, while remaining with same string length.
+///
+///Meaning that if I send 010101 and add 1. The leftmost 0 will still be there after the operation.
 class Binary{
 
   String _bits;
@@ -105,6 +116,7 @@ class Binary{
 
 }
 
+///Return the class of network according to the first 8 bit set.
 NetworkType getDefaultMask(String n){
   try{
     final number = int.parse(n.split(".")[0]);
@@ -126,6 +138,13 @@ NetworkType getDefaultMask(String n){
   }
 }
 
+///# Subnet Class
+///## A class used as interface for external easier printability
+///
+///Transforms the list of Strings sent to it to a format like a subnet.
+///>> Like this - 127.0.0.1
+///
+///And saves it to each attribuite so it can be printed elsewhere more easily.
 class Subnet{
 
   String id,firstHost,lastHost,broadcast,mask;
@@ -154,6 +173,11 @@ class Subnet{
   }
 }
 
+///Due to the input format
+///>> 120x3
+///
+///This method returns a list like 
+///>>[120,120,120]
 List<int> networkRepetitions(String network){
   if(network == null || network.isEmpty){
     return [];
@@ -180,6 +204,10 @@ List<int> networkRepetitions(String network){
   }
 }
 
+///## Sorts the desired networks
+///
+///Cleans the list of textFields into a list of ints contianing the desired number of hosts.
+///And sorts them because of the rules of subnetting by VLSM.
 List<int> cleanFields(List<TextEditingController> fields){
   final temp  = fields.map((e) => e.text);
   final List<int> hosts = [];
@@ -190,6 +218,9 @@ List<int> cleanFields(List<TextEditingController> fields){
   return hosts;
 }
 
+///# Generates the Subnets
+///
+///This method recieve the info so it can generate the subnets for final release.
 Subnet generateSubnet(String net,NetworkType mask,int hosts){
   final ips = new List<String>(5);
   ips[0] = net;
@@ -218,6 +249,7 @@ Subnet generateSubnet(String net,NetworkType mask,int hosts){
   return new Subnet(ips,hosts);
 }
 
+///Gets the next subnet after calculating the hosts for the last network
 String nextNetwork(String network){
   const networkLength = 32;
   final bits = getBits(network);
@@ -226,6 +258,9 @@ String nextNetwork(String network){
   return networkBinary.bits;
 }
 
+///This is the master module that calls everything else
+///
+///## ENTRY POINT
 List<Subnet> subnet(String network, List<TextEditingController> hostFields){
   final hosts = cleanFields(hostFields);
   String net = getBits(network);
