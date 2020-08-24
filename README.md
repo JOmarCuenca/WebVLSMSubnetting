@@ -8,4 +8,4 @@ You can download this proyect or go to the website and try a public version your
 
 ## Link to public website
 
-Link -> VLSM.surge.sh
+Link -> vlsm.surge.sh
